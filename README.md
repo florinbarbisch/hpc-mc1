@@ -22,9 +22,13 @@ Note, the Docker Compose file available in the repository contains more containe
 
 3. Open the Jupyter notebook. The link to the Jupyter notebook is in the log file of the Jupyter container. The link looks something like this, where the token is individual: http://127.0.0.1:8888/?token=e3cea84dbec991e60795ee749817392f73960184cc5e5c84
 
-4. Run the Kafka tutorial of the notebook. Use [Kafdrop]( https://github.com/obsidiandynamics/kafdrop) to monitor/explore your cluster, topics, and messages. For example, start and stop individual brokers (via Docker Desktop) or change Kafka parameters such as the replication factor and watch how the cluster behaves via Kafdrop.
+4. Run the Kafka tutorial of the notebook. Use [Kafdrop]( https://github.com/obsidiandynamics/kafdrop) to monitor/explore your cluster, topics, and messages. For example, start and stop individual brokers (via Docker Desktop) or change Kafka parameters such as the replication factor (TODO WHERE???????????????????????????????????????????????) and watch how the cluster behaves via Kafdrop.
+[http://127.0.0.1:9000/](http://127.0.0.1:9000/)
 
 5. Write two different data generator functions, which regularly send messages containing data. One generator should send messages at least every second (1Hz). Choose yourself which data is sent. The application of the data can be chosen freely, but choose a good mixture of a simple and a complex message. The data should be variable. The data generator can send simulated data or real data. Use suitable Kafka components and meaningful names of functions, variables etc. for the implementation. 
+
+- use https://github.com/hfhoffman1144/smartphone_sensor_stream
+- use sine wave generator or similar
 
     Tips:
     * Use several notebooks such that you can start and stop the endless loops of data processing individually.
