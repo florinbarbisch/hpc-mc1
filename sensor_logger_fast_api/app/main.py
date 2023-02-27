@@ -30,10 +30,10 @@ async def root():
 async def data(data: dict, activity: str = None, device: str = None, person: str = None):
     try:
         for measurement in data["payload"]:
-            timestamp_ms = int(measurement["time"]) // 1_000 # convert nanoseconds to milliseconds
-            key_bytes = bytes(f"{person}:{device}:{activity}:{measurement['name']}", encoding='utf-8')
+            timestamp_ms = int(measurement["time"]) // 1_000_000 # convert nanoseconds to milliseconds
+            key_bytes = bytes(f"{person}:{device}:{activity}", encoding='utf-8')
             value_bytes = bytes(json.dumps(measurement["values"]), encoding='utf-8')
-            _producer.send(os.environ.get('KAFKA_TOPIC', "sensorData"),
+            _producer.send(measurement['name'],
                            key=key_bytes,
                            value=value_bytes,
                            timestamp_ms=timestamp_ms) 
