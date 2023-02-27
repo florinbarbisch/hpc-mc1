@@ -99,7 +99,7 @@ services:
   sensorloggerfastapi:
     image: sensorloggerfastapi
     hostname: sensorloggerfastapi
-    container_name: sensorloggerfastapi1
+    container_name: sensorloggerfastapi
     ports:
       - 8080:8080
     environment:
@@ -111,9 +111,37 @@ services:
   cpulogger:
     image: cpulogger
     hostname: cpulogger
-    container_name: cpulogger1
+    container_name: cpulogger
     environment:
       - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
       - KAFKA_TOPIC=cpu
     depends_on: 
       - broker-1
+
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=cpu
+
+  mongodb_consumer:
+    image: mongodb_consumer
+    hostname: mongodb_consumer
+    container_name: mongodb_consumer
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+      - KAFKA_GROUP_ID=mongodb_consumer
+      - MONGO_DB_CONNECTION_STRING=mongodb://mongoadmin:secret@mongodb:27017/
+    depends_on: 
+      - broker-1
+      - mongodb

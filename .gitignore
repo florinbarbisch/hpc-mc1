@@ -5,6 +5,8 @@ __pycache__/
 .jupyter/
 .local/
 
+data/*
+
 # C extensions
 *.so
 
