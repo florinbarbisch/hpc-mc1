@@ -28,7 +28,6 @@ Note, the Docker Compose file available in the repository contains more containe
 5. Write two different data generator functions, which regularly send messages containing data. One generator should send messages at least every second (1Hz). Choose yourself which data is sent. The application of the data can be chosen freely, but choose a good mixture of a simple and a complex message. The data should be variable. The data generator can send simulated data or real data. Use suitable Kafka components and meaningful names of functions, variables etc. for the implementation. 
 
 - use https://github.com/hfhoffman1144/smartphone_sensor_stream
-- use sine wave generator or similar
 - how to choose a key: https://sprinkle-twinkles.medium.com/kafka-best-practices-edition-how-to-design-kafka-message-key-and-why-it-is-important-in-6b483b2bdb0c
 
     Tips:

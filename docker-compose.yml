@@ -107,6 +107,13 @@ services:
       - KAFKA_TOPIC=sensorlogger
     depends_on: 
       - broker-1
-      - broker-2
-      - broker-3
-      - kafdrop
+
+  cpulogger:
+    image: cpulogger
+    hostname: cpulogger
+    container_name: cpulogger1
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+    depends_on: 
+      - broker-1
