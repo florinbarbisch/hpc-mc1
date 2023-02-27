@@ -5,7 +5,9 @@ import psutil
 import time
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 topic = os.environ.get('KAFKA_TOPIC', "cpu-logger")
 logger.info(f"Kafka topic: {topic}")
@@ -16,11 +18,8 @@ try:
                               api_version=(0, 10),
                               max_block_ms=10000)
 except Exception as ex:
-    logger.error('Exception while connecting Kafka')
-    logger.error(str(ex))
+    logger.error('Exception while connecting Kafka', exc_info=True)
 
-
-time.sleep(10)
 
 while True:
     try:
@@ -31,8 +30,6 @@ while True:
         _producer.flush()
         logger.info('Message published successfully.')
     except Exception as ex:
-        logger.error('Exception in publishing message')
-        logger.error(str(ex))
+        logger.error('Exception in publishing message', exc_info=True)
 
     time.sleep(0.5)
-    
