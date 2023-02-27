@@ -38,7 +38,7 @@ Note, the Docker Compose file available in the repository contains more containe
 
 7. Draw an overview of your application components including interfaces and data flows, for example using a component diagram. Answer the following questions and interpret your experiments or results: 
 
-![Component Diagram](./part1.drawio.png)
+![Component Diagram](./docs/part1.drawio.png)
     
       * What are the tasks of the components?
         - Zookeeper: The Zookeeper is a centralized service used by Kafka for the leader election, leader election for partitions and topics. It also stores configurations for topics and sends notifications to brokers in case of changes.
