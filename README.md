@@ -29,6 +29,7 @@ Note, the Docker Compose file available in the repository contains more containe
 
 - use https://github.com/hfhoffman1144/smartphone_sensor_stream
 - use sine wave generator or similar
+- how to choose a key: https://sprinkle-twinkles.medium.com/kafka-best-practices-edition-how-to-design-kafka-message-key-and-why-it-is-important-in-6b483b2bdb0c
 
     Tips:
     * Use several notebooks such that you can start and stop the endless loops of data processing individually.

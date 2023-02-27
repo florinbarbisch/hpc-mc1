@@ -93,6 +93,20 @@ services:
       - 9000:9000
     environment:
       - KAFKA_BROKERCONNECT=broker1:9093,broker2:9095,broker3:9097
-    depends_on: 
+    depends_on:
       - broker-1
       
+  sensorloggerfastapi:
+    image: sensorloggerfastapi
+    hostname: sensorloggerfastapi
+    container_name: sensorloggerfastapi1
+    ports:
+      - 8080:8080
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=sensorlogger
+    depends_on: 
+      - broker-1
+      - broker-2
+      - broker-3
+      - kafdrop
