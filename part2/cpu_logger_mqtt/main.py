@@ -15,6 +15,7 @@ logger.info(f"MQTT topic: {topic}")
 
 
 client = mqtt.Client(client_id="cpu-logger-" + str(uuid.uuid4()))
+client.loop_start()
 
 
 try:
