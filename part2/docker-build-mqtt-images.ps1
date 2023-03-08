@@ -3,7 +3,7 @@
 # add the images you want to build to the array
 $images = @(
     "cpu_logger_mqtt",
-    #"mongodb_consumer_mqtt",
+    "mongodb_consumer_mqtt",
     "sensor_logger_fast_api_mqtt"
 )
 

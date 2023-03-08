@@ -41,3 +41,31 @@ services:
       - MQTT_TOPIC=cpu/percent
     depends_on: 
       - mosquitto
+
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ./.data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=cpu
+
+
+  mongodb_consumer:
+    image: mongodb_consumer_mqtt
+    hostname: mongodb_consumer
+    container_name: mongodb_consumer
+    environment:
+      - MQTT_BROKER=mosquitto1
+      - MQTT_TOPIC=cpu/percent
+      - MONGO_DB_CONNECTION_STRING=mongodb://mongoadmin:secret@mongodb:27017/
+    depends_on: 
+      - mosquitto
+      - mongodb
