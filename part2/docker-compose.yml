@@ -20,3 +20,13 @@ services:
     expose:
       - 1883
       - 9001
+
+  cpulogger:
+    image: cpu_logger_mqtt
+    hostname: cpulogger
+    container_name: cpulogger
+    environment:
+      - MQTT_BROKER=mosquitto1
+      - MQTT_TOPIC=cpu/percent
+    depends_on: 
+      - mosquitto
