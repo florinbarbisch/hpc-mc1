@@ -20,6 +20,17 @@ services:
     expose:
       - 1883
       - 9001
+ 
+  sensorloggerfastapi:
+    image: sensor_logger_fast_api_mqtt
+    hostname: sensorloggerfastapi
+    container_name: sensorloggerfastapi
+    ports:
+      - 8080:8080
+    environment:
+      - MQTT_BROKER=mosquitto1
+    depends_on: 
+      - mosquitto
 
   cpulogger:
     image: cpu_logger_mqtt
