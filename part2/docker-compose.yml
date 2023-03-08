@@ -1,0 +1,22 @@
+version: '3'
+
+      
+services:
+  jupyter:
+    container_name: jupyter-mosquitto
+    image: jupyter/scipy-notebook:${JUPYTER_VERSION:-latest}
+    volumes:
+      - ./notebooks:/home/jovyan/
+    ports:
+      - 8888:8888
+
+  mosquitto:
+    container_name: mosquitto1
+    image: eclipse-mosquitto:${MOSQUITTO_VERSION:-latest}
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    expose:
+      - 1883
+      - 9001

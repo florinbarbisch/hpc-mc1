@@ -3,7 +3,7 @@ version: '3'
       
 services:
   jupyter:
-    container_name: jupyter1
+    container_name: jupyter-kafka
     image: jupyter/scipy-notebook:${JUPYTER_VERSION:-latest}
     volumes:
       - ./notebooks:/home/jovyan/
