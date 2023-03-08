@@ -86,11 +86,33 @@ Use other serializers/deserializers instead of JSON for the messages.
 
 3. Answer the following questions and interpret your experiments or results: 
       * Which communication pattern is used by Kafka?
+          - publish-subscribe based durable messaging system:
+             - kafka is not exactly a publish-subscribe system, because the consumers need to pull the messages manually.
+             - the producer does not know the receivers of the messages.
+             - the messages are stored durably on the broker (even after they have been pulled by all consumers).
+             - messages are split up into different topics
       * What is the difference compared to your choosen pattern?
-      * What are the advantages and disadvantages of these patterns? 
+          - MQTT (publish-subscribe) differs in the following ways:
+             - MQTT is a publish-subscribe system. The messages are therefore pushed to the consumers (no need to pull manually).
+             - MQTT is not durable. The messages are not stored on the broker.
+      * What are the advantages and disadvantages of these patterns?
+          - Advantages over MQTT:
+             - Kafka is durable. The messages are stored on the broker. Allows for reprocessing of messages.
+             - Kafka is not a publish-subscribe system. The consumers need to pull the messages manually. This way the consumers can decide when to pull the messages. This is especially useful if the consumers are not always online.
+          - Disadvantages over MQTT:
+              - Kafka is not a publish-subscribe system. This can also be seen as a disadvantages. This approach requires a bit more programming effort.
+              - Kafka is durable. This can also be seen as a disadvantage. The messages need to be deleted manually (or after a certain time). Otherwise the disk space will be filled up.
       * How can you scale the two different approaches? What are ? Why? What are challenges to be considered?
+          - Different Kafka components are scaled in different ways:
+              - A cluster is scaled, by adding more brokers to the cluster. The partitions and topics are then distributed over the different machines. Also the producers don't need to know each broker. It's enough to know some in the cluster to discover the other brokers.
+              - A consumer group is scaled, by adding more consumers to the group and adding more partitions. Each consumer then reads from mutually exclusive partitions. This is called horizontal scaling or scaling out. There must be at least one partition per consumer. Else the consumers will sit idle.
+          - MQTT is scaled by adding more brokers to the cluster. A load balancer is used to distribute the messages to the different brokers. The subscribers cannot be scaled that easily. One imaginable scenario is, when a subscribe subscribes to a topic with wildcards and is lagging behind (because processing the message takes very long). Then multiple subscribers could subscribe to mutually exclusive sub-topics of the original topic.
       * What other 2-3 topologies/patterns do you know used for data processing? Describe the differences and use cases with at least one additional topology. 
+           - Point-to-point (P2P) Messaging: In P2P messaging, messages are sent from one sender to one specific receiver. Compared to publish-subscribe, the sender needs to know the receiver. P2P messaging is useful for scenarios where one application needs to send a message to another specific application, and the message should only be received by that application.
+           - Batch processing: Batch processing involves collecting and processing data in large batches at specific intervals. Batch processing is often used for scenarios where data can be processed in batches instead of real-time or when the data need to be processed together (extract frequencies from timeseries data).
+           - Stream processing: Stream processing involves processing data in real-time as it is generated. Stream processing is useful for scenarios where data needs to be processed and acted upon as it is generated, such as in real-time analytics (monitoring of a nuclear power plant).
       * Which pattern suits your chosen application best?
+           - I originally added smartphone sensor data, because I need the data for the [sensor based activity recognition challenge](https://spaces.technik.fhnw.ch/spaces/sensor-based-activity-recognition). Once we have a machine learning model running, we could predict the activity of a person. Since we need to split the timeseries data in windows and extract frequencies and other specific features from this time window, batch processing would be optimal (where each batch would represent one time window).
 
 #### Bonus 2
 Show how your container setup could be integrated into a container orchestration system (such as Kubernets) and how it would profit from this. Or show how you could replace some of the components with cloud-based offers and what changes/consideradtions come with this.
