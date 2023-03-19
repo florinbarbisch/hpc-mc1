@@ -8,7 +8,9 @@ services:
     volumes:
       - ./notebooks:/home/jovyan/
     ports:
-      - "8888:8888"
+      - 8888:8888
+      # for viztracer
+      - 9001:9001
         
   zookeeper:
     image: confluentinc/cp-zookeeper
