@@ -99,7 +99,7 @@ services:
       - broker-1
       
   sensorloggerfastapi:
-    image: sensor_logger_fast_api_kafka
+    build: sensor_logger_fast_api_kafka
     hostname: sensorloggerfastapi
     container_name: sensorloggerfastapi
     ports:
@@ -111,7 +111,7 @@ services:
       - broker-1
 
   cpulogger:
-    image: cpu_logger_kafka
+    build: cpu_logger_kafka
     hostname: cpulogger
     container_name: cpulogger
     environment:
@@ -136,7 +136,7 @@ services:
       - MONGO_INITDB_DATABASE=cpu
 
   mongodb_consumer:
-    image: mongodb_consumer_kafka
+    build: mongodb_consumer_kafka
     hostname: mongodb_consumer
     container_name: mongodb_consumer
     environment:
