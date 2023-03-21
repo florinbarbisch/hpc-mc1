@@ -3,7 +3,7 @@ version: '3'
       
 services:
   jupyter:
-    container_name: jupyter1
+    container_name: jupyter-kafka
     image: jupyter/scipy-notebook:${JUPYTER_VERSION:-latest}
     volumes:
       - ./notebooks:/home/jovyan/
@@ -93,6 +93,54 @@ services:
       - 9000:9000
     environment:
       - KAFKA_BROKERCONNECT=broker1:9093,broker2:9095,broker3:9097
-    depends_on: 
+    depends_on:
       - broker-1
       
+  sensorloggerfastapi:
+    image: sensor_logger_fast_api_kafka
+    hostname: sensorloggerfastapi
+    container_name: sensorloggerfastapi
+    ports:
+      - 8080:8080
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+    depends_on: 
+      - broker-1
+
+  cpulogger:
+    image: cpu_logger_kafka
+    hostname: cpulogger
+    container_name: cpulogger
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+    depends_on: 
+      - broker-1
+
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ./.data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=cpu
+
+  mongodb_consumer:
+    image: mongodb_consumer_kafka
+    hostname: mongodb_consumer
+    container_name: mongodb_consumer
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+      - KAFKA_GROUP_ID=mongodb_consumer
+      - MONGO_DB_CONNECTION_STRING=mongodb://mongoadmin:secret@mongodb:27017/
+    depends_on: 
+      - broker-1
+      - mongodb
