@@ -125,6 +125,9 @@ TODO some python profiling library
 
     - Experiment 1: 3 brokers, 1 zookeeper, 2 producer (sensor-logger: send each data 10 times), 2 consumers (sensor-fft-consumer, mongo-db-consumer), Generate sensor data for 60 seconds.
         - Results: It took an aditional 18 seconds for the sensor-logger to produce (and for sensor-fft-consumer to consume) all  messages. I think that the sensor-logger can't insert the messages fast enough into the kafka broker. We will test with more messages in the next experiment.
+    - Experiment 2: 3 brokers, 1 zookeeper, 2 producer (sensor-logger: send each data 100 times), 2 consumers (sensor-fft, mongo-db-consumer), Generate sensor data for 60 seconds. 
+        - Results: The sensor-logger took an aditional 90 seconds to produce the new messages (I disconnected from the internet). The sensor-fft-consumer took the same time to consume the newly inserted messages. The combined lag of the consumer group sensor-ftt-consumer was between 0-140 messages. Also the CPU usage of the sensor-logger is high (110% in docker) So the bottleneck clearly lies in the sensor-logger not being able to insert the messages fast enough.
+
 2. Analyze the performance of your application:
 
     * Data generators/processors: measure the average time incl. standard deviation required by your data generator loop over several runs and loops. Determine a reasonable number of runs and loop executions for the performance analysis. 

@@ -1,0 +1,164 @@
+version: '3'
+
+      
+services:
+  jupyter:
+    container_name: jupyter-kafka
+    image: jupyter/scipy-notebook:${JUPYTER_VERSION:-latest}
+    volumes:
+      - ./notebooks:/home/jovyan/
+    ports:
+      - 8888:8888
+      # for viztracer
+      - 9001:9001
+        
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    hostname: zookeeper
+    container_name: zookeeper1
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    # quick fix to avoid brokers shuting down after restart
+    tmpfs: "/datalog"
+
+  broker-1:
+    image: confluentinc/cp-enterprise-kafka:6.0.10
+    hostname: broker1
+    container_name: broker1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    expose:
+    - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker1:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker1:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+  broker-2:
+    image: confluentinc/cp-enterprise-kafka:6.0.10
+    hostname: broker2
+    container_name: broker2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094"
+    expose:
+    - "9095"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker2:9095,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9095,OUTSIDE://0.0.0.0:9094
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker2:9095
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+  broker-3:
+    image: confluentinc/cp-enterprise-kafka:6.0.10
+    hostname: broker3
+    container_name: broker3
+    depends_on:
+      - zookeeper
+    ports:
+      - "9096:9096"
+    expose:
+    - "9097"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker3:9097,OUTSIDE://localhost:9096
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9097,OUTSIDE://0.0.0.0:9096
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker3:9097
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop1
+    ports:
+      - 9000:9000
+    environment:
+      - KAFKA_BROKERCONNECT=broker1:9093,broker2:9095,broker3:9097
+    depends_on:
+      - broker-1
+      
+  sensorloggerfastapi:
+    build: sensor_logger_fast_api_kafka
+    hostname: sensorloggerfastapi
+    container_name: sensorloggerfastapi
+    ports:
+      - 8080:8080
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      # create more data by increasing the number of names
+      - NAMES_TO_MULTIPLY=Joey,Aurelio,Evan,Donny,Foster,Dwayne,Grady,Quinton,Darin,Mickey,Hank,Kim,Peter,Jeremy,Jess,Jimmie,Vern,Pasquale,Romeo,Chris,Dale,Beau,Cliff,Timothy,Raphael,Brain,Mauro,Luke,Myron,Omar,Reynaldo,Major,Clinton,Nolan,Raymond,Lucien,Carey,Winfred,Dan,Abel,Elliott,Brent,Chuck,Dirk,Tod,Emerson,Dewey,Scot,Enrique,Al,Beatrice,Brandy,Kathy,Jane,Marcy,Shelly,Lucy,Cathy,Joanna,Doris,Lindsay,Staci,Shelia,Rosanne,Rebecca,Luz,Flora,Rosalie,Karla,Phoebe,Meagan,Virginia,Amanda,Katy,Karla,Deanne,Pearl,Christi,Victoria,Ola,Alexandra,Marina,Lorraine,Sybil,Adeline,Taylor,Anita,Aurora,Neva,Alisha,Maria,Erna,Gwendolyn,Brenda,Bethany,Sybil,Earline,June,Brandy,Sue
+    depends_on: 
+      - broker-1
+
+  cpulogger:
+    build: cpu_logger_kafka
+    hostname: cpulogger
+    container_name: cpulogger
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+    depends_on: 
+      - broker-1
+
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - ./.data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=cpu
+
+  mongodb_consumer:
+    build: mongodb_consumer_kafka
+    hostname: mongodb_consumer
+    container_name: mongodb_consumer
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_TOPIC=cpu
+      - KAFKA_GROUP_ID=mongodb_consumer
+      - MONGO_DB_CONNECTION_STRING=mongodb://mongoadmin:secret@mongodb:27017/
+    depends_on: 
+      - broker-1
+      - mongodb
+  
+  sensorfftconsumer:
+    build: sensor_fft_consumer
+    hostname: sensorfftconsumer
+    container_name: sensorfftconsumer
+    environment:
+      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
+      - KAFKA_CONSUMER_TOPIC=accelerometer
+      - KAFKA_PRODUCER_TOPIC=accelerometer-fft
+      - KAFKA_GROUP_ID=sensor_fft_consumer
+    depends_on: 
+      - broker-1
