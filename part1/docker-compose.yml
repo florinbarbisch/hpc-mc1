@@ -106,7 +106,6 @@ services:
       - 8080:8080
     environment:
       - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
-      - NAMES_TO_MULTIPLY=Adolf,Bormann,Canaris,Dietrich,Erwin,Franz,Göring,Heinz,Irwin,Joachim
     depends_on: 
       - broker-1
 
