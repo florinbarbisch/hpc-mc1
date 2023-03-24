@@ -123,6 +123,8 @@ TODO some python profiling library
 
 1. Change the scalability of your communication framework by changing the used resources. (E.g.: add brokers and/or zookeepers and play with parameters in the docker-compose file. Use orders of magnited more producers/consumers.) Perform 2-3 experiments with different configurations.
 
+    - Experiment 1: 3 brokers, 1 zookeeper, 2 producer (sensor-logger: send each data 10 times), 2 consumers (sensor-fft-consumer, mongo-db-consumer), Generate sensor data for 60 seconds.
+        - Results: It took an aditional 18 seconds for the sensor-logger to produce (and for sensor-fft-consumer to consume) all  messages. I think that the sensor-logger can't insert the messages fast enough into the kafka broker. We will test with more messages in the next experiment.
 2. Analyze the performance of your application:
 
     * Data generators/processors: measure the average time incl. standard deviation required by your data generator loop over several runs and loops. Determine a reasonable number of runs and loop executions for the performance analysis. 

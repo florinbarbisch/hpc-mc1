@@ -107,7 +107,7 @@ services:
     environment:
       - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
       # create more data by increasing the number of names
-      #- NAMES_TO_MULTIPLY=Adolf,Bormann,Canaris,Dietrich,Erwin,Franz,Göring,Heinz,Irwin,Joachim
+      - NAMES_TO_MULTIPLY=Adolf,Bormann,Canaris,Dietrich,Erwin,Franz,Göring,Heinz,Irwin,Joachim
     depends_on: 
       - broker-1
 
@@ -150,10 +150,7 @@ services:
       - mongodb
   
   sensorfftconsumer:
-    build:
-      context: sensor_fft_consumer
-      # don't use cache when building the image
-      no_cache: true
+    build: sensor_fft_consumer
     hostname: sensorfftconsumer
     container_name: sensorfftconsumer
     environment:
