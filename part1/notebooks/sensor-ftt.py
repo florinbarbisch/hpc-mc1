@@ -1,6 +1,5 @@
 from kafka import KafkaConsumer, KafkaProducer
 import json
-import uuid
 import os
 import logging
 import sys
@@ -8,10 +7,7 @@ import time
 import multiprocessing
 from scipy.fft import fft
 import numpy as np
-import cProfile
 
-# save the start time, so we don't profile indefinitely
-start_time = time.time()
 
 multiprocessing.set_start_method('fork')
 
@@ -95,9 +91,6 @@ def consume_messages(pipe_connection):
                     consumer.commit()
         except Exception as ex:
             logger.error('Exception in consuming message', exc_info=True)
-
-        if count > 500:
-            break
 
         time.sleep(0.05)
 
