@@ -2,33 +2,25 @@ from kafka import KafkaConsumer, KafkaProducer
 import json
 import os
 import logging
-import sys
 import time
 import multiprocessing
 from scipy.fft import fft
-import numpy as np
-
-
-multiprocessing.set_start_method('fork')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def consume_messages(pipe_connection):
-    sys.stdout.write("Starting\n")
-    sys.stdout.flush()
-    
+    logger.info("Starting consumer")
 
-    consumer = KafkaConsumer(os.environ.get('KAFKA_TOPIC', "accelerometer"), 
+    consumer = KafkaConsumer(os.environ.get('KAFKA_CONSUMER_TOPIC', "accelerometer"), 
                              auto_offset_reset = 'earliest',
                              bootstrap_servers = os.environ.get('KAFKA_BROKER', 'broker1:9093').split(","), 
                              group_id = os.environ.get('KAFKA_GROUP_ID', "accelerometer-group"),
                              api_version = (0, 10), 
                              value_deserializer = json.loads,
                              consumer_timeout_ms = 1000)
-    sys.stdout.write("consumer done\n")
-    sys.stdout.flush()
+    logger.info("Consumer started")
 
     messages_by_key = {}
     
@@ -39,9 +31,7 @@ def consume_messages(pipe_connection):
         try:
             for message in consumer:
                 if count == 0:
-                    sys.stdout.write(str(message))
-                    sys.stdout.write("\n")
-                    sys.stdout.flush()
+                    logger.info(f"Received first message: {message}")
                 # convert bytes to string
                 key = message.key.decode('utf-8')
                 if key not in messages_by_key:
@@ -64,9 +54,11 @@ def consume_messages(pipe_connection):
                     message.value.get('z')
                     ])
 
-                sys.stdout.write(f"\rRead Message {count}")
+                if count % 100 == 0:
+                    logger.info(f"Received {count} messages")
                 count += 1
                 
+                # order every 100 messages
                 if count-100 >= last_ordering:
                     # Step 2: Order messages and send to pipe
                     for key in messages_by_key:
@@ -90,8 +82,7 @@ def consume_messages(pipe_connection):
                     # commit offsets so we won't get the same messages again
                     consumer.commit()
         except Exception as ex:
-            logger.error('Exception in consuming message', exc_info=True)
-
+            logger.error(f"Error consuming messages: {ex}")
         time.sleep(0.05)
 
 
@@ -119,11 +110,12 @@ def process_messages(pipe_connection):
                     'y': complex_ndarray_to_list(y_fft),
                     'z': complex_ndarray_to_list(z_fft)
             }
-        producer.send('accelerometer-fft',
+        producer.send(os.environ.get('KAFKA_PRODUCER_TOPIC', "accelerometer-fft"),
                         key=key.encode('utf-8'),
                         value=bytes(json.dumps(message), encoding='utf-8'))
         producer.flush()
 
+        logger.info(f"Processed messages for key {key} and second {second}")
 
 
 # start two processes, one for consuming messages and one for processing messages
@@ -137,4 +129,3 @@ p1.start()
 p2.start()
 p1.join()
 p2.join()
-
