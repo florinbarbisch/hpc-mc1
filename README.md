@@ -131,6 +131,9 @@ TODO some python profiling library
 2. Analyze the performance of your application:
 
     * Data generators/processors: measure the average time incl. standard deviation required by your data generator loop over several runs and loops. Determine a reasonable number of runs and loop executions for the performance analysis. 
+        - I created a jupyter notebook for each generator:
+            - sensor-logger-fast-api: 300 runs (5 minutes worht of data), as much loops as datapoints are generated per seconds (this averages to about 4540). The average time is 234ms and the standard deviation is 41ms.
+            - cpu-logger:
     * Data generators/processors: determine which call of your processor takes the most time. Which 3 methods are called the most or needed the most time and how much time?
     * Data generators/processors: create a profile of your processor code in a processor.prof file and create 1-2 visualizations of the profile (e.g. with [SnakeViz](https://jiffyclub.github.io/snakeviz/)).
 
