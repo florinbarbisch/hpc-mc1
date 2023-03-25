@@ -135,7 +135,13 @@ TODO some python profiling library
             - sensor-logger-fast-api: 300 runs (5 minutes worth of data), as much loops as datapoints are generated per seconds (this averages to about 4540). The average time per loop is 234ms and the standard deviation is 41ms.
             - cpu-logger: 600 runs (5 minutes worth of data), 100 loops. The average time per loop is 117ms and the standard deviation is 18ms.
     * Data generators/processors: determine which call of your processor takes the most time. Which 3 methods are called the most or needed the most time and how much time?
+        - cpu-logger:
+            - Function with the most time was: psutil.cpu_percent(): 0.0663s, 100 calls. There were no other functions on the same level.
+            - Function with the most calls was: psutil._cpu_tot_time(): 0.00216, 2400 calls. Second most called was: psutil._cpu_times_deltas(): 0.0129, 1200 calls. Third most called was: _pslinux.py(<listcomp>): 0.00209s, 1200 calls.
     * Data generators/processors: create a profile of your processor code in a processor.prof file and create 1-2 visualizations of the profile (e.g. with [SnakeViz](https://jiffyclub.github.io/snakeviz/)).
+        - cpu-logger:
+            - ![cpu-logger profile](./docs/cpu-logger-profile.png)
+        
 
 3. Did you detect bottlenecks? Describe and discuss 1-3 detected bottlenecks. 
 
