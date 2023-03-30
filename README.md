@@ -78,6 +78,8 @@ Note, the Docker Compose file available in the repository contains more containe
 #### Bonus 1
 Use other serializers/deserializers instead of JSON for the messages.
 
+**Florin**: I used a CSV serializer/deserializer for the cpu data.
+
 ### Part 2: Communication Patterns
 
 1. Rewrite your application of part 1 using another communication pattern. You can also use another communciation framework, such as RabbitMQ and/or another underlying messaging protcol such as MQTT.
