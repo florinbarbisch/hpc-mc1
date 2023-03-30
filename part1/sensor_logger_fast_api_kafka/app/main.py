@@ -41,7 +41,7 @@ async def data(data: dict, activity: str = None, device: str = None, person: str
                             key=key_bytes,
                             value=value_bytes,
                             timestamp_ms=timestamp_ms) 
-        _producer.flush()
+        #_producer.flush()
         logger.info('Message published successfully.')
     except Exception as ex:
         logger.error('Exception in publishing message')

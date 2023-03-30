@@ -103,6 +103,10 @@ def process_messages(pipe_connection):
         x_fft = fft(message['x'])
         y_fft = fft(message['y'])
         z_fft = fft(message['z'])
+        # order these arrays by the absolute value of the complex number
+        x_fft = x_fft[abs(x_fft).argsort(kind='heapsort')]
+        y_fft = y_fft[abs(y_fft).argsort(kind='heapsort')]
+        z_fft = z_fft[abs(z_fft).argsort(kind='heapsort')]
         # send the fft to the producer
         message = {
                     'second': second,
