@@ -4,6 +4,9 @@
 
 You have a client that continuously accumulates data and wants to process it further. To do this, the client wants to use the [Apache Kafka - Data Streaming Platform](https://kafka.apache.org/) in a first step. In a a second step it will use a different communication pattern. The application runs distributed in different Docker containers. Define what kind of data your client has and what problem they want to solve with it. Describe the initial situation and the problem to be solved. Then implement your methods according to the tasks below. Write a short report and answer the questions of each of the 3 parts bellow. Include meassurements/plots where meaningful.
 
+## Starting Point
+My application consists of two Producers, one inserts the cpu workload twice a second and the other inserts sensor measurements from a smartphone (about 4500 messages per second per device). The cpu workload is then processed by a consumer and inserted into a datasink (mongodb). I stopped working with the sensor measurements for part 3, because it proved to be quite a bit more difficult to work with the data. In part 3 I introduced a bottleneck into the mongodb consumer, which I then solved by adding more consumers.
+
 ### Part 1: Kafka Cluster and Application Setup
 
 1. Set up Kafka locally on your computer, e.g. according to [this Kafka tutorial](https://github.com/mneedham/basic-kafka-tutorial.git). 
