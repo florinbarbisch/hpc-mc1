@@ -121,14 +121,12 @@ Show how your container setup could be integrated into a container orchestration
 
 ### Part 3: Performance Analysis and Evaluation
 
-TODO some python profiling library
-
 1. Change the scalability of your communication framework by changing the used resources. (E.g.: add brokers and/or zookeepers and play with parameters in the docker-compose file. Use orders of magnited more producers/consumers.) Perform 2-3 experiments with different configurations.
 
-    - Experiment 1: 3 brokers, 1 zookeeper, 2 producer (sensor-logger: send each data 10 times), 2 consumers (sensor-fft-consumer, mongo-db-consumer), Generate sensor data for 60 seconds.
-        - Results: It took an aditional 18 seconds for the sensor-logger to produce (and for sensor-fft-consumer to consume) all  messages. I think that the sensor-logger can't insert the messages fast enough into the kafka broker. We will test with more messages in the next experiment.
-    - Experiment 2: 3 brokers, 1 zookeeper, 2 producer (sensor-logger: send each data 100 times), 2 consumers (sensor-fft, mongo-db-consumer), Generate sensor data for 60 seconds. 
-        - Results: The sensor-logger took an aditional 90 seconds to produce the new messages (I disconnected from the internet). The sensor-fft-consumer took the same time to consume the newly inserted messages. The combined lag of the consumer group sensor-ftt-consumer was between 0-140 messages. Also the CPU usage of the sensor-logger is high (110% in docker) So the bottleneck clearly lies in the sensor-logger not being able to insert the messages fast enough.
+    - Experiment 1: 3 brokers, 1 zookeeper, mongodb-consumer takes more time to consume a message (0.01 seconds). cpu-logger sends 10 times more data.
+        - Results: the consumer can keep up with the data. The consumer lag fluctuates between 0-100, but never goes over 100 (in kafdrop).
+    - Experiment 2: 3 brokers, 1 zookeeper, mongodb-consumer takes more time to consume a message **(0.1 seconds)**. cpu-logger sends 10 times more data.
+        - Results: The consumer cannot keep up with the data. The consumer lag is steadily increasing. 
 
 2. Analyze the performance of your application:
 
