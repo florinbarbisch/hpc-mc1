@@ -11,7 +11,6 @@ services:
       - 8888:8888
       # for viztracer
       - 9001:9001
-      - 8000:8000
         
   zookeeper:
     image: confluentinc/cp-zookeeper
@@ -98,19 +97,6 @@ services:
       - KAFKA_BROKERCONNECT=broker1:9093,broker2:9095,broker3:9097
     depends_on:
       - broker-1
-      
-  sensorloggerfastapi:
-    build: sensor_logger_fast_api_kafka
-    hostname: sensorloggerfastapi
-    container_name: sensorloggerfastapi
-    ports:
-      - 8080:8080
-    environment:
-      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
-      # create more data by increasing the number of names
-      - NAMES_TO_MULTIPLY=Joey,Aurelio,Evan,Donny,Foster,Dwayne,Grady,Quinton,Darin,Mickey,Hank,Kim,Peter,Jeremy,Jess,Jimmie,Vern,Pasquale,Romeo,Chris,Dale,Beau,Cliff,Timothy,Raphael,Brain,Mauro,Luke,Myron,Omar,Reynaldo,Major,Clinton,Nolan,Raymond,Lucien,Carey,Winfred,Dan,Abel,Elliott,Brent,Chuck,Dirk,Tod,Emerson,Dewey,Scot,Enrique,Al,Beatrice,Brandy,Kathy,Jane,Marcy,Shelly,Lucy,Cathy,Joanna,Doris,Lindsay,Staci,Shelia,Rosanne,Rebecca,Luz,Flora,Rosalie,Karla,Phoebe,Meagan,Virginia,Amanda,Katy,Karla,Deanne,Pearl,Christi,Victoria,Ola,Alexandra,Marina,Lorraine,Sybil,Adeline,Taylor,Anita,Aurora,Neva,Alisha,Maria,Erna,Gwendolyn,Brenda,Bethany,Sybil,Earline,June,Brandy,Sue
-    depends_on: 
-      - broker-1
 
   cpulogger:
     build: cpu_logger_kafka
@@ -119,6 +105,7 @@ services:
     environment:
       - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
       - KAFKA_TOPIC=cpu
+      - DATA_MULTIPLIER=10
     depends_on: 
       - broker-1
 
@@ -146,18 +133,7 @@ services:
       - KAFKA_TOPIC=cpu
       - KAFKA_GROUP_ID=mongodb_consumer
       - MONGO_DB_CONNECTION_STRING=mongodb://mongoadmin:secret@mongodb:27017/
+      - EXTRA_WAIT_TIME=0.1
     depends_on: 
       - broker-1
       - mongodb
-  
-  sensorfftconsumer:
-    build: sensor_fft_consumer
-    hostname: sensorfftconsumer
-    container_name: sensorfftconsumer
-    environment:
-      - KAFKA_BROKER=broker1:9093,broker2:9095,broker3:9097
-      - KAFKA_CONSUMER_TOPIC=accelerometer
-      - KAFKA_PRODUCER_TOPIC=accelerometer-fft
-      - KAFKA_GROUP_ID=sensor_fft_consumer
-    depends_on: 
-      - broker-1
