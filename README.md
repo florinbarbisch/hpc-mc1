@@ -118,6 +118,16 @@ Use other serializers/deserializers instead of JSON for the messages.
 
 #### Bonus 2
 Show how your container setup could be integrated into a container orchestration system (such as Kubernets) and how it would profit from this. Or show how you could replace some of the components with cloud-based offers and what changes/consideradtions come with this.
+ - the broker(s) in Kafka and MQTT could easily be replaced by a cloud service. This would mean, I don't have to care about scaling the brokers. Here are some cloud services: 
+    - MQTT: [https://www.hivemq.com/](https://www.hivemq.com/)
+    - Kafka: [https://cloudkarafka.com/](https://cloudkarafka.com/)
+ - The mongodb-consumer can be replaced with a cloud sink such as [https://docs.confluent.io/kafka-connectors/gcs-sink/current/overview.html](https://docs.confluent.io/kafka-connectors/gcs-sink/current/overview.html):
+ - Changes and considerations:
+    - The data is in the cloud and subject to other risks, such as a data breach.
+    - A working internet connection is required, whereas otherwise a locally working network is sufficient.
+    - Data needs to travel greater distances => more lag
+    - The risk of downtime for the brokers lies in the hands of the cloud provider (which might even be lower, actually)
+    - Scaling up/down is easier (no need to buy additional hardware)
 
 ### Part 3: Performance Analysis and Evaluation
 
