@@ -174,6 +174,12 @@ Mitigate or produce a bottleneck.
 Write a reflection on the realization of the mini-challenge. What went well? Where did problems occur? Where did you need more time than planned? 
 What would you do differently in the future? What would you change in the assignment? Give examples in each case.
 
+**Florin**:
+I think I did a good job on the mini challenge. I was able to complete tasks. However I didn't spend enough time designing a situation/application where the two producers have something to do with each other and would allow me to easily create a bottleneck in part 3. Maybe submitting a concept and receiving feedback or discussing what I want to do with the Fachexpert before starting would have helped mitigating this problem. 
+
+During development, I had some problems working with docker (this was the first time I wrote my own image). But in the end it was always something trivial (like forgetting to rebuild the image and wondering why my newly added print statement doesn't work).
+
+I also spent a lot of time restarting the whole container setup. I think next time I should develop the producers/consumers on the jupyter notebook and containerize only after everything is working.
 
 ## Hints
 
