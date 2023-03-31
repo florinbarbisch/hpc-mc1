@@ -32,4 +32,4 @@ while True:
     except Exception as ex:
         logger.error('Exception in publishing message', exc_info=True)
 
-    time.sleep(0.5)
+    time.sleep(0.5 / float(os.environ.get('DATA_MULTIPLIER', 1))) # increase the speed of data generation

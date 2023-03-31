@@ -22,7 +22,7 @@ services:
       - 9001
  
   sensorloggerfastapi:
-    image: sensor_logger_fast_api_mqtt
+    build: sensor_logger_fast_api_mqtt
     hostname: sensorloggerfastapi
     container_name: sensorloggerfastapi
     ports:
@@ -33,7 +33,7 @@ services:
       - mosquitto
 
   cpulogger:
-    image: cpu_logger_mqtt
+    build: cpu_logger_mqtt
     hostname: cpulogger
     container_name: cpulogger
     environment:
@@ -59,7 +59,7 @@ services:
 
 
   mongodb_consumer:
-    image: mongodb_consumer_mqtt
+    build: mongodb_consumer_mqtt
     hostname: mongodb_consumer
     container_name: mongodb_consumer
     environment:
