@@ -145,23 +145,29 @@ Show how your container setup could be integrated into a container orchestration
     * Data generators/processors: determine which call of your processor takes the most time. Which 3 methods are called the most or needed the most time and how much time?
         - cpu-logger:
             - Function with the most time was: psutil.cpu_percent(): 0.0663s, 100 calls. There were no other functions on the same level.
-            - Function with the most calls was: psutil._cpu_tot_time(): 0.00216, 2400 calls. Second most called was: psutil._cpu_times_deltas(): 0.0129, 1200 calls. Third most called was: _pslinux.py(<listcomp>): 0.00209s, 1200 calls.
+            - Function with the most calls was: psutil._cpu_tot_time(): 0.00216, 2400 calls. Second most called was: psutil._cpu_times_deltas(): 0.0129, 1200 calls. Third most called was: _pslinux.py(): 0.00209s, 1200 calls.
             - So the most time is spent on getting the cpu's workload. We can't speed up the cpu-logging process, since it's an IO-bound process (which are typically hard/impossible to parallize).
     * Data generators/processors: create a profile of your processor code in a processor.prof file and create 1-2 visualizations of the profile (e.g. with [SnakeViz](https://jiffyclub.github.io/snakeviz/)).
         - cpu-logger:
             - ![cpu-logger profile](./docs/cpu-logger-profile.png) It's clear, that the most time was spent on getting the cpu's workload. So there is no way to speed up the cpu-logger.
         - mongodb-consumer:
-            - ![mongodb-consumer](./docs/mongodb-consumer-profile.png) The most time was spent on my artificial heavy_ai() method. Since my artificial heavy_ai() method is not parallelizable (which I just made up for the sake of this experiment), I can't speed the method it self up. But I can create more consumers and distribute the load. That's what my third experiment is about.
+            - ![mongodb-consumer](./docs/mongodb-consumer-profile.png) The most time was spent on my artificial heavy_ai() method. Since my artificial heavy_ai() method should represent a machine learning method, which it self cannot be parralized (that easil) => I can't speed the method it self up. But I can create more consumers and distribute the load. That's what my third experiment is about. There's also another method of parralizing the process, which I discuss in Point 3.
 
-    - Experiment 3: 3 brokers, 1 zookeeper, mongodb-consumer takes more time to consume a message **(0.1 seconds)**. cpu-logger sends 10 times more data. I added 2 more mongodb-consumers (with the same consumer group). I also increased the partitions to 12.
-        - Results: The consumer can now keep up with the data. The consumer lag fluctuates again between 0-100, but never goes over 100 (in kafdrop). The cpu-logger is still sending 10 times more data. But thanks to kafka being able to distribute the load on 3 consumers, there is no consumer lag.
+    - Experiment 3: 3 brokers, 1 zookeeper, mongodb-consumer takes more time to consume a message **(0.1 seconds)**. cpu-logger sends 10 times more data. I **added 2 more mongodb-consumers** (with the same consumer group). I also increased the partitions to 12.
+        - Results: The consumer can now keep up with the data. The combined consumer lag fluctuates again between 0-100, but never goes over 100 (in kafdrop). The cpu-logger is still sending 10 times more data. But thanks to kafka being able to distribute the load on 3 consumers, consumer lag is no more.
         
 
-3. Did you detect bottlenecks? Describe and discuss 1-3 detected bottlenecks. 
+3. Did you detect bottlenecks? Describe and discuss 1-3 detected bottlenecks.
+
+Yes, in my second experiment the mongodb-consumer wasn't consuming fast enough and the consumer lag started increasing. The bottleneck came from the method I introduced: `heavy_ai()`. In a normal setting this could be a function calling a machine learning model which would take some time to compute a prediction. But I didn't want to spend much time on creating/finding such a machine learning model. So I just made it sleep 100ms. Since the method itself is not easily parallizable, I'm left with two (or three, if you include the combination of both methods) options:
+ 1. Create multiple consumers consuming from the same consumer group. (Also need to increase the partition size).
+ 2. Allow the consumer to have multiple workers executing heavy_ai() method at the same time. This method does not have that much overhead as method 1. But it only scales vertically, whereas method 1 scales horizontally.
+ 3. A combination of both would allow to combine both advantages. (I only have one machine and therefore can't test horizontal scaling => that's why I used method 1).
 
 #### Bonus 3
 Mitigate or produce a bottleneck.
 
+**Florin**: I introduced a bottleneck in the mongodb-consumer and mitigated it by adding more consumers in the same consumer group.
 
 ## Reflection
 
